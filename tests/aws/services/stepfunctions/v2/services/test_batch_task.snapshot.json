@@ -1,0 +1,6 @@
+{
+  "tests/aws/services/stepfunctions/v2/services/test_batch_task.py::TestTaskBatch::test_submit_job_base": {
+    "recorded-date": "22-11-2023, 19:57:16",
+    "recorded-content": {}
+  }
+}

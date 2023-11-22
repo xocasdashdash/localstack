@@ -1,0 +1,15 @@
+{
+  "StartAt": "BatchSubmit",
+  "States": {
+    "BatchSubmit": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob",
+      "Parameters": {
+        "JobDefinition.$": "$.JobDefinition",
+        "JobName.$": "$.JobName",
+        "JobQueue.$": "$.JobQueue"
+      },
+      "End": true
+    }
+  }
+}

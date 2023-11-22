@@ -29,6 +29,9 @@ class ServicesTemplates(TemplateLoader):
     API_GATEWAY_INVOKE_WITH_QUERY_PARAMETERS: Final[str] = os.path.join(
         _THIS_FOLDER, "statemachines/api_gateway_invoke_with_query_parameters.json5"
     )
+    BATCH_SUBMIT_JOB_BASE: Final[str] = os.path.join(
+        _THIS_FOLDER, "statemachines/batch_submit_job_base.json"
+    )
     EVENTS_PUT_EVENTS: Final[str] = os.path.join(
         _THIS_FOLDER, "statemachines/events_put_events.json5"
     )
