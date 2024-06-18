@@ -601,7 +601,7 @@ def test_trigger_event_on_ssm_change(monkeypatch, aws_client, clean_up, strategy
     clean_up(rule_name=rule_name, target_ids=target_id)
 
 
-class TestTargetSqs:
+class TestEventTargetSqs:
     @markers.aws.validated
     def test_put_events_with_target_sqs(self, put_events_with_filter_to_sqs, snapshot):
         entries = [
@@ -665,7 +665,6 @@ class TestTargetSqs:
         assert "EventId" in response.get("Entries")[0]
 
     @markers.aws.validated
-    @pytest.mark.skipif(is_v2_provider(), reason="V2 provider does not support this feature yet")
     def test_put_events_with_target_sqs_event_detail_match(
         self, put_events_with_filter_to_sqs, snapshot
     ):
