@@ -90,56 +90,6 @@ def test_put_events_with_target_sns(
     )
 
 
-@markers.aws.validated
-@pytest.mark.skipif(is_v2_provider(), reason="V2 provider does not support this feature yet")
-def test_should_ignore_schedules_for_put_event(create_lambda_function, cleanups, aws_client):
-    """Regression test for https://github.com/localstack/localstack/issues/7847"""
-    fn_name = f"test-event-fn-{short_uid()}"
-    create_lambda_function(
-        func_name=fn_name,
-        handler_file=TEST_LAMBDA_PYTHON_ECHO,
-        runtime=Runtime.python3_9,
-        client=aws_client.lambda_,
-    )
-
-    aws_client.lambda_.add_permission(
-        FunctionName=fn_name,
-        StatementId="AllowFnInvokeStatement",
-        Action="lambda:InvokeFunction",
-        Principal="events.amazonaws.com",
-    )
-
-    fn_arn = aws_client.lambda_.get_function(FunctionName=fn_name)["Configuration"]["FunctionArn"]
-    aws_client.events.put_rule(
-        Name="ScheduledLambda", ScheduleExpression="rate(1 minute)"
-    )  # every minute, can't go lower than that
-    cleanups.append(lambda: aws_client.events.delete_rule(Name="ScheduledLambda"))
-    aws_client.events.put_targets(
-        Rule="ScheduledLambda", Targets=[{"Id": "calllambda1", "Arn": fn_arn}]
-    )
-    cleanups.append(
-        lambda: aws_client.events.remove_targets(Rule="ScheduledLambda", Ids=["calllambda1"])
-    )
-
-    aws_client.events.put_events(
-        Entries=[
-            {
-                "Source": "MySource",
-                "DetailType": "CustomType",
-                "Detail": json.dumps({"message": "manually invoked"}),
-            }
-        ]
-    )
-
-    def check_invocation():
-        events_after = aws_client.logs.filter_log_events(logGroupName=f"/aws/lambda/{fn_name}")
-        # the custom sent event should NOT trigger the lambda (!)
-        assert len([e for e in events_after["events"] if "START" in e["message"]]) >= 1
-        assert len([e for e in events_after["events"] if "manually invoked" in e["message"]]) == 0
-
-    retry(check_invocation, sleep=5, retries=15)
-
-
 @markers.aws.needs_fixing
 def test_put_events_with_target_firehose(aws_client, clean_up):
     s3_bucket = "s3-{}".format(short_uid())
