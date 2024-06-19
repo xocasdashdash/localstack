@@ -24,6 +24,7 @@ from localstack.utils.strings import long_uid, short_uid, to_str
 from localstack.utils.sync import poll_condition, retry
 from tests.aws.services.events.conftest import assert_valid_event
 from tests.aws.services.events.helper_functions import (
+    events_connection_wait_for_deleted,
     is_old_provider,
     is_v2_provider,
     sqs_collect_messages,
@@ -1362,7 +1363,12 @@ class TestConnection:
     @pytest.mark.parametrize("auth_type", ["BASIC", "OAUTH_CLIENT_CREDENTIALS", "API_KEY"])
     @pytest.mark.parametrize("invocation_parameters", [True, False])
     def test_create_list_describe_update_delete_connection(
-        self, auth_type, invocation_parameters, events_create_connection, snapshot
+        self,
+        auth_type,
+        invocation_parameters,
+        events_create_connection,
+        aws_client,
+        snapshot,
     ):
         # Specify auth parameters
         if auth_type == "BASIC":
@@ -1432,6 +1438,7 @@ class TestConnection:
             }
             auth_parameters["InvocationHttpParameters"] = invocation_http_parameters
 
+        # Test create connection
         connection_name = f"test-connection-{short_uid()}"
         response = events_create_connection(
             Name=connection_name,
@@ -1439,7 +1446,8 @@ class TestConnection:
             AuthorizationType=auth_type,
             AuthParameters=auth_parameters,
         )
-        connection_arn_id = response["ConnectionArn"].split("/")[-1]
+        connection_arn = response["ConnectionArn"]
+        connection_arn_id = connection_arn.split("/")[-1]
 
         snapshot.add_transformers_list(
             [
@@ -1449,10 +1457,34 @@ class TestConnection:
         )
         snapshot.match("create-connection", response)
 
+        response = aws_client.events.list_connections(NamePrefix=connection_name)
+        snapshot.match("list-connections", response)
+
+        response = aws_client.events.describe_connection(
+            Name=connection_name,
+        )
+        secret_arn = response["SecretArn"]
+        secret_arn_id = secret_arn.split("/")[-1]
+
+        snapshot.add_transformer(snapshot.transform.regex(secret_arn_id, "<secret-arn-id>"))
+        snapshot.match("describe-connection", response)
+
+        response = aws_client.events.delete_connection(Name=connection_name)
+        snapshot.match("delete-connection", response)
+
+        events_connection_wait_for_deleted(aws_client, connection_name)
+
+        response = aws_client.events.list_connections(NamePrefix=connection_name)
+        snapshot.match("list-connections-after-delete", response)
+
     @markers.aws.validated
     def test_list_connections_with_prefix(self, aws_client):
         pass
 
     @markers.aws.validated
     def test_list_connections_with_limit(self, aws_client):
+        pass
+
+    @markers.aws.validated
+    def test_list_connection_with_state(self, aws_client):
         pass
