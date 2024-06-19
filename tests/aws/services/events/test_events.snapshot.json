@@ -1208,5 +1208,20 @@
         }
       }
     }
+  },
+  "tests/aws/services/events/test_events.py::TestConnection::test_create_list_describe_update_delete_connection": {
+    "recorded-date": "18-06-2024, 15:29:18",
+    "recorded-content": {
+      "create-connection": {
+        "ConnectionArn": "arn:aws:events:<region>:111111111111:connection/<connection-name>/ebe99901-153c-495a-b8c5-7f789a0bb127",
+        "ConnectionState": "AUTHORIZED",
+        "CreationTime": "datetime",
+        "LastModifiedTime": "datetime",
+        "ResponseMetadata": {
+          "HTTPHeaders": {},
+          "HTTPStatusCode": 200
+        }
+      }
+    }
   }
 }

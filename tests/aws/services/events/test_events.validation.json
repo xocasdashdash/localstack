@@ -1,4 +1,7 @@
 {
+  "tests/aws/services/events/test_events.py::TestConnection::test_create_list_describe_update_delete_connection": {
+    "last_validated_date": "2024-06-18T15:29:18+00:00"
+  },
   "tests/aws/services/events/test_events.py::TestEventBus::test_create_list_describe_delete_custom_event_buses[regions0]": {
     "last_validated_date": "2024-04-29T13:15:44+00:00"
   },
