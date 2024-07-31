@@ -33,6 +33,14 @@ def apigateway_next_gen():
 
 
 @aws_provider()
+def cloudcontrol():
+    from localstack.services.cloudcontrol.provider import CloudControlProvider
+
+    provider = CloudControlProvider()
+    return Service.for_provider(provider)
+
+
+@aws_provider()
 def cloudformation():
     from localstack.services.cloudformation.provider import CloudformationProvider
 
