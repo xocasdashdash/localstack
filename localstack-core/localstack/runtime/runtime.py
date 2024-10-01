@@ -109,7 +109,10 @@ class LocalstackRuntime:
         self.config.dirs.mkdirs()
 
     def _init_gateway_server(self):
-        from localstack.utils.ssl import create_ssl_cert, install_predefined_cert_if_available
+        from localstack.utils.ssl import (
+            create_ssl_cert,
+            install_predefined_cert_if_available,
+        )
 
         install_predefined_cert_if_available()
         serial_number = self.config.GATEWAY_LISTEN[0].port
@@ -189,8 +192,15 @@ def create_from_environment() -> LocalstackRuntime:
         )
 
     if len(components) > 1:
+        for component in components:
+            if config.LOADED_COMPONENTS_NAME == component.name:
+                LOG.warning(
+                    "There are more than one component plugins, choosing %s from configuration.",
+                    component.name,
+                )
+                return LocalstackRuntime(component)
         LOG.warning(
-            "There are more than one component plugins, using the first one which is %s",
+            "There are more than one component plugins, choosing the first one: %s.",
             components[0].name,
         )
 

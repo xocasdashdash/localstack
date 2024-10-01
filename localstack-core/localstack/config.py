@@ -281,7 +281,10 @@ def ping(host):
     args = "ping %s %s" % (ping_opts, host)
     return (
         subprocess.call(
-            args, shell=not is_in_windows, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            args,
+            shell=not is_in_windows,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
         == 0
     )
@@ -397,6 +400,9 @@ except ImportError:
     # dotenv may not be available in lambdas or other environments where config is loaded
     LOADED_PROFILES = None
 
+# loaded components name - default aws
+LOADED_COMPONENTS_NAME = os.environ.get("LOADED_COMPONENTS_NAME", "aws")
+
 # directory for persisting data (TODO: deprecated, simply use PERSISTENCE=1)
 DATA_DIR = os.environ.get("DATA_DIR", "").strip()
 
@@ -449,7 +455,11 @@ WAIT_FOR_DEBUGGER = is_env_true("WAIT_FOR_DEBUGGER")
 USE_SSL = is_env_true("USE_SSL")
 
 # whether the S3 legacy V2/ASF provider is enabled
-LEGACY_V2_S3_PROVIDER = os.environ.get("PROVIDER_OVERRIDE_S3", "") in ("v2", "legacy_v2", "asf")
+LEGACY_V2_S3_PROVIDER = os.environ.get("PROVIDER_OVERRIDE_S3", "") in (
+    "v2",
+    "legacy_v2",
+    "asf",
+)
 
 # Whether to report internal failures as 500 or 501 errors.
 FAIL_FAST = is_env_true("FAIL_FAST")
@@ -493,7 +503,8 @@ LOG = logging.getLogger(__name__)
 if is_trace_logging_enabled():
     load_end_time = time.time()
     LOG.debug(
-        "Initializing the configuration took %s ms", int((load_end_time - load_start_time) * 1000)
+        "Initializing the configuration took %s ms",
+        int((load_end_time - load_start_time) * 1000),
     )
 
 
