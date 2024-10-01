@@ -153,6 +153,7 @@ class DynamodbServer(Server):
             parameters.extend(["-optimizeDbBeforeStartup"])
         if self.share_db:
             parameters.extend(["-sharedDb"])
+        parameters.extend(["-disableTelemetry"])
 
         return cmd + parameters
 
