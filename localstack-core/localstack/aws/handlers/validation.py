@@ -134,7 +134,7 @@ class OpenAPIResponseValidator(OpenAPIValidator):
                         WerkzeugOpenAPIResponse(response),
                     )
                 except ResponseValidationError as exc:
-                    LOG.error("Response validation failed for %s: $s", path, exc)
+                    LOG.error("Response validation failed for %s: %s", path, exc)
                     response.status_code = 500
                     response.set_json({"error": exc.__class__.__name__, "message": str(exc)})
                     chain.stop()
